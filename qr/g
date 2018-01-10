@@ -1,0 +1,82 @@
+/**
+ * Created by chao.qi on 2018/1/10 0010.
+ */
+const data = [];
+var util = require("./common/common.util").util;
+var start = "180000023000";
+for (var i = start; i <= "180000028000"; i++) {
+    data.push({code: i, url: util.createQrUrl(i)})
+}
+
+var dir = "D:\\works\\projects\\广西\\gx_qr_produce\\dist\\codes_zip";
+var async = require("async");
+var path = require("path");
+var zip = require("node-native-zip");
+var archive = new zip();
+var fs = require("fs");
+var qrGenerate =  function (qrCode, qrFilePath, qrSetting, callback) {
+        qrSetting = qrSetting || {
+                ec_level: 'M',
+                type: 'png',
+                size: 65,
+                margin: 0,
+                parse_url:true
+            };
+        var qr_png = qr.imageSync(qrCode, qrSetting);
+        fs.outputFile(qrFilePath,qr_png,callback);
+    };
+var applyNo = "fdsfdsafds";
+var log = console.log;
+var numCPUs = require('os').cpus().length;
+console.log("cpus:",numCPUs);
+// var queue = async.queue(function (task, callback) {
+//     task.path = path.join(dir, applyNo, task.code + ".png");
+//     task.name = task.code + ".png";
+//     qrGenerate(task.url, task.path, {},callback);
+// }, numCPUs);
+//
+// queue.saturated = function () {
+//     log('all workers to be used');
+// }
+//
+// queue.empty = function () {
+//     log('no more tasks wating');
+// }
+// queue.drain = function () {
+//     console.timeEnd("bb");
+//     console.log('all tasks have been processed');
+//     // archive.addFiles(data, function (err) {
+//     //     if (err) {
+//     //         console.log("err while adding files", err);
+//     //     } else {
+//     //         var buff = archive.toBuffer();
+//     //         fs.writeFile("./test2.zip", buff, function () {
+//     //             console.log("Finished");
+//     //         });
+//     //     }
+//     // });
+// }
+//
+// queue.push(data);
+console.time("bb");
+async.eachLimit(data,100,  function (d, cb) {
+    d.path = path.join(dir, applyNo, d.code + ".png");
+    d.name = d.code + ".png";
+    qrGenerate(d.url, d.path, {}, cb);
+}, function (err) {
+    console.timeEnd("bb");
+    if (err) {
+        console.log(err)
+        return;
+    }
+    archive.addFiles(data, function (err) {
+        if (err) {
+            console.log("err while adding files", err);
+        } else {
+            var buff = archive.toBuffer();
+            fs.writeFile("./test2.zip", buff, function () {
+                console.log("Finished");
+            });
+        }
+    });
+})
