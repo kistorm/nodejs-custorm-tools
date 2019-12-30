@@ -18,7 +18,7 @@
   "dependencies": {
     "fs-extra": ">= 2.1.2",
     "async": "2.3.0",
-    "mongoose":"~2.6"
+    "mongoose":"~5.8"
   },
   "author": "kistorm",
   "license": "ISC",
