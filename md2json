@@ -1,0 +1,106 @@
+const readline = require("linebyline");
+const fs = require("fs-extra");
+let rl = readline("./api.md");
+
+let result = [];
+let tmp = null, tmp_child_list_item = null, start = 0;
+let title = null, sub_titile = null, interface_title = null;
+rl.on("line", function (line, lineCount, byteCount) {
+    if (line.indexOf("# ") === 0) {
+        if (tmp) {
+            result.push(tmp);
+        }
+        title = line.substring(2);
+        tmp = {
+            index: start,
+            name: title,
+            desc: title,
+            add_time: new Date().getTime(),
+            up_time: new Date().getTime(),
+            list: []
+        }
+        start++;
+    } else if (line.indexOf("## ") === 0) {
+        sub_titile = line.substring(3);
+        tmp_child_list_item = {
+            "query_path": {
+                "path": "",
+                "params": []
+            },
+            "status": "done",
+            "type": "static",
+            "req_body_is_json_schema": true,
+            "res_body_is_json_schema": true,
+            "api_opened": false,
+            "tag": [],
+            "method": "POST",
+            "title": sub_titile,
+            "path": "",
+            "req_params": [],
+            "res_body_type": "json",
+            "req_query": [],
+            "req_headers": [
+                {
+                    "required": "1",
+                    "name": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                }
+            ],
+            "req_body_form": [],
+            "__v": 0,
+            "desc": "",
+            "markdown": "",
+            "req_body_type": "form",
+            "res_body": "{}"
+        };
+    } else {
+        if (line.indexOf("**Path：** ") === 0) {
+            let interfacePath = line.substring(10);
+            if (tmp_child_list_item) {
+                tmp_child_list_item["path"] = interfacePath;
+                tmp_child_list_item["query_path"]["path"] = interfacePath;
+                tmp_child_list_item.done = "ok";
+                tmp.list.push(tmp_child_list_item);
+            }
+        }
+    }
+}).on('end', function (e) {
+    fs.writeJsonSync("./api.json", result);
+});
+
+md 文件如下
+
+ <h1 class="curproject-name"> xxxx </h1> 
+ 
+
+
+# xxx
+
+## xxx
+<a id=xxxx> </a>
+### 基本信息
+
+**Path：** /shop/xxx/xxxx
+
+**Method：** POST
+
+**接口描述：**
+
+
+### 请求参数
+**Headers**
+
+| 参数名称  | 参数值  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ | ------------ |
+| Content-Type  |  application/x-www-form-urlencoded | 是  |   |   |
+
+### 返回数据
+
+<table>
+  <thead class="ant-table-thead">
+    <tr>
+      <th key=name>名称</th><th key=type>类型</th><th key=required>是否必须</th><th key=default>默认值</th><th key=desc>备注</th><th key=sub>其他信息</th>
+    </tr>
+  </thead><tbody className="ant-table-tbody"><tr key=0-0><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> tag</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-1><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> message</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-2><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> data</span></td><td key=1><span>object</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-2-0><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> customerInfo</span></td><td key=1><span>object</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-2-0-0><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> headImg</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">头像地址</span></td><td key=5></td></tr><tr key=0-2-0-1><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> name</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">客户名称</span></td><td key=5></td></tr><tr key=0-2-0-2><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> dueTime</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">有效期</span></td><td key=5></td></tr><tr key=0-2-0-3><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> vipLevel</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">客户vip等级</span></td><td key=5></td></tr><tr key=0-2-1><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> vipList</span></td><td key=1><span>object []</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5><p key=3><span style="font-weight: '700'">item 类型: </span><span>object</span></p></td></tr><tr key=0-2-1-0><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> vipLevel</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">vip等级</span></td><td key=5></td></tr><tr key=0-2-1-1><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> vipPrice</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">vip购买价格</span></td><td key=5></td></tr><tr key=0-2-1-2><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> discount</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">可享受折扣</span></td><td key=5></td></tr><tr key=0-2-1-3><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> term</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">有效期</span></td><td key=5></td></tr><tr key=0-2-1-4><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> score</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">可获积分</span></td><td key=5></td></tr><tr key=0-2-2><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> packageList</span></td><td key=1><span>object []</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5><p key=3><span style="font-weight: '700'">item 类型: </span><span>object</span></p></td></tr><tr key=0-2-2-0><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> name</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">礼包名称</span></td><td key=5></td></tr><tr key=0-2-2-1><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> img</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">礼包图片</span></td><td key=5></td></tr><tr key=0-2-2-2><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> price</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">价格</span></td><td key=5></td></tr><tr key=0-2-2-3><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> score</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">积分</span></td><td key=5></td></tr><tr key=0-2-2-4><td key=0><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> desc</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">描述</span></td><td key=5></td></tr>
+               </tbody>
+              </table>
